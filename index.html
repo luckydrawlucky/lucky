@@ -1,0 +1,393 @@
+<!DOCTYPE html>
+<html lang="zh-Hant">
+<head>
+   
+   <meta name="google-site-verification" content="pnUaqo_H08T5yWUtbUYJUlZCknzz5mcl2dJUDsWhQSU" />
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=no">
+    <title>Lucky Draw</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Cherry+Bomb+One&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css">
+    <script async src="https://pagead2.googlesyndication.com/pagead/js/adsbygoogle.js?client=ca-pub-2766706232814064"
+     crossorigin="anonymous"></script>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            text-align: center;
+            margin: 0;
+            background: radial-gradient(circle, #2972b6, #1f5c8f);
+            color: white;
+        }
+        header {
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            background-color: #2972b6;
+            padding: 10px;
+            width: 100%;
+            box-sizing: border-box;
+            margin: 0;
+            text-align: center;
+            box-shadow: 0 2px 15px rgba(0, 0, 0, 0.3);
+        }
+        h1 {
+            font-family: "Cherry Bomb One", serif;
+            font-size: 2.5rem;
+            margin: 0;
+            color: white;
+            letter-spacing: 0.1rem;
+            text-shadow: 5px 4px 0px #ffbf1f;
+        }
+        .input-container {
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            margin: 25px 0;
+            position: relative;
+        }
+        #prizeInput {
+            width: 200px;
+            height: 28px;
+            padding: 5px;
+            font-size: 14px;
+            border-radius: 5px;
+            border: 1px solid #ccc;
+            margin-right: 10px;
+            box-shadow: 5px 4px 0px rgba(0, 0, 0, 0.2);
+        }
+        .fullscreen-btn {
+            position: absolute;
+            right: 25px;
+            top: 50%;
+            transform: translateY(-50%);
+            cursor: pointer;
+            background-color: #ffbf1f;
+            color: white;
+            border: none;
+            border-radius: 5px;
+            padding: 8px 10px;
+            font-size: 14px;
+            font-weight: bold;
+            transition: background-color 0.3s, box-shadow 0.3s;
+            box-shadow: 5px 4px 0px rgba(0, 0, 0, 0.2);
+        }
+        .fullscreen-btn:hover {
+            background-color: #e6b800;
+        }
+        /* 媒體查詢：隱藏全螢幕按鈕在小螢幕設備上 */
+        @media (max-width: 768px) {
+            .fullscreen-btn {
+                display: none;
+            }
+        }
+        .card-container {
+            perspective: 1000px;
+            display: inline-block;
+            margin: 10px;
+        }
+        .card {
+            width: 100px;
+            height: 150px;
+            position: relative;
+            transform-style: preserve-3d;
+            transition: transform 1s ease;
+            background-color: #ffbf1f;
+            border-radius: 15px;
+            box-shadow: 0 4px 20px rgba(0, 0, 0, 0.5);
+            color: white;
+        }
+        .card:hover {
+            transform: scale(1.05);
+        }
+        .card.flipped {
+            transform: rotateY(180deg);
+        }
+        .card-face, .card-back {
+            position: absolute;
+            width: 100%;
+            height: 100%;
+            backface-visibility: hidden;
+            border-radius: 15px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 20px; /* 字體大小 */
+            font-weight: bold;
+            color: #fff;
+            background-color: #ffbf1f;
+        }
+        .card-back {
+            transform: rotateY(180deg);
+        }
+        .order-number {
+            font-size: 18px;
+            font-weight: bold;
+            color: white;
+            position: absolute;
+            bottom: 10px;
+            right: 10px;
+        }
+        #prizeList {
+            margin-top: 20px;
+            text-align: left;
+            font-family: Arial, sans-serif;
+        }
+        .prize-item {
+            margin: 10px 0;
+            margin-left: 20px;
+        }
+        .delete-btn, .add-btn, .reset-btn {
+            margin-left: 10px;
+            cursor: pointer;
+            background-color: #ffbf1f;
+            color: white;
+            border: none;
+            border-radius: 5px;
+            padding: 8px 10px;
+            font-size: 14px;
+            font-weight: bold;
+            transition: background-color 0.3s, box-shadow 0.3s;
+            box-shadow: 5px 4px 0px rgba(0, 0, 0, 0.2);
+        }
+        .delete-btn:hover, .add-btn:hover, .reset-btn:hover {
+            background-color: #e6b800;
+        }
+        .result-card {
+            width: 300px;
+            height: 450px;
+            background-color: #ffbf1f;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 50px;
+            color: white;
+            border-radius: 15px;
+            position: fixed;
+            top: 50%;
+            left: 50%;
+            transform: translate(-50%, -50%) scale(0);
+            transition: transform 0.5s ease;
+            visibility: hidden;
+            box-shadow: 0 4px 30px rgba(0, 0, 0, 0.5);
+        }
+        .opening-card {
+            width: 200px;
+            height: 300px;
+            position: fixed;
+            top: 50%;
+            left: 50%;
+            transform: translate(-50%, -50%);
+            perspective: 1000px;
+            font-size: 40px; /* 字體大小 */
+        }
+        .opening-card .card {
+            width: 100%;
+            height: 100%;
+            transition: transform 1s ease;
+            cursor: pointer;
+            font-size: 40px; /* 字體大小 */
+            font-family: "Cherry Bomb One"; /* 字體 */
+        }
+        .opening-card.flipped .card {
+            transform: rotateY(180deg);
+        }
+        .opening-card-face {
+            font-size: 40px; /* 修改為您希望的大小 */
+        }
+        .opening-card-back {
+            font-size: 40px; /* 修改為您希望的大小 */
+        }
+        @keyframes shake {
+            0%, 100% {
+                transform: translate(-50%, -50%) rotate(0deg);
+            }
+            25% {
+                transform: translate(-50%, -50%) rotate(2deg);
+            }
+            50% {
+                transform: translate(-50%, -50%) rotate(-2deg);
+            }
+            75% {
+                transform: translate(-50%, -50%) rotate(2deg);
+            }
+        }
+    </style>
+</head>
+<body>
+    <header>
+        <h1><span>Lucky</span> <span style="margin-left: 10px;">Draw</span></h1>
+    </header>
+    <div class="input-container">
+        <input type="text" id="prizeInput" placeholder="..." />
+        <button id="addPrizeBtn" class="add-btn"> + </button>
+        <button id="resetBtn" class="reset-btn"><i class="fas fa-redo"></i></button>
+        <button id="fullscreenBtn" class="fullscreen-btn"><i class="fas fa-expand"></i></button>
+    </div>
+    <div id="cardContainer"></div>
+    <div id="prizeList"></div>
+    <div id="resultCard" class="result-card"></div>
+    <div id="openingCard" class="opening-card">
+        <div class="card">
+            <div class="card-face opening-card-face">Lucky</div>
+            <div class="card-back opening-card-back">Draw</div>
+        </div>
+    </div>
+    <script>
+        const cardContainer = document.getElementById('cardContainer');
+        const addPrizeBtn = document.getElementById('addPrizeBtn');
+        const resetBtn = document.getElementById('resetBtn');
+        const fullscreenBtn = document.getElementById('fullscreenBtn');
+        const prizeInput = document.getElementById('prizeInput');
+        const prizeList = document.getElementById('prizeList');
+        const resultCard = document.getElementById('resultCard');
+        const openingCard = document.getElementById('openingCard');
+
+        let prizes = [];
+
+        setInterval(() => {
+            openingCard.classList.toggle('flipped');
+        }, 2000);
+
+        prizeInput.addEventListener('click', () => {
+            openingCard.style.transition = 'opacity 0.5s ease';
+            openingCard.style.opacity = '0';
+            setTimeout(() => {
+                openingCard.style.visibility = 'hidden';
+            }, 500); // 等待過渡結束後再隱藏
+        });
+
+        function addPrize() {
+            const prizeName = prizeInput.value.trim();
+            if (prizeName) {
+                prizes.push(prizeName);
+                updateCards();
+                updatePrizeList();
+                prizeInput.value = '';
+            } else {
+                alert('請輸入獎品名稱！');
+            }
+        }
+
+        addPrizeBtn.addEventListener('click', addPrize);
+
+        prizeInput.addEventListener('keypress', (event) => {
+            if (event.key === 'Enter') {
+                addPrize();
+            }
+        });
+
+        resetBtn.addEventListener('click', () => {
+            prizes = [];
+            cardContainer.innerHTML = '';
+            prizeList.innerHTML = '';
+            resultCard.style.visibility = 'hidden';
+            resultCard.style.transform = 'translate(-50%, -50%) scale(0)';
+        });
+
+        fullscreenBtn.addEventListener('click', () => {
+            if (!document.fullscreenElement) {
+                document.documentElement.requestFullscreen();
+            } else {
+                if (document.exitFullscreen) {
+                    document.exitFullscreen();
+                }
+            }
+        });
+
+        function updateCards() {
+            const shuffledPrizes = shuffleArray([...prizes]);
+            cardContainer.innerHTML = '';
+            shuffledPrizes.forEach((prize, index) => createCard(prize, index + 1));
+        }
+
+        function createCard(prizeName, order) {
+            const cardContainerDiv = document.createElement('div');
+            cardContainerDiv.className = 'card-container';
+            const card = document.createElement('div');
+            card.className = 'card';
+            card.dataset.flipped = 'false';
+
+            const cardFace = document.createElement('div');
+            cardFace.className = 'card-face';
+
+            const orderNumber = document.createElement('div');
+            orderNumber.className = 'order-number';
+            orderNumber.textContent = order;
+
+            cardFace.appendChild(orderNumber);
+
+            const cardBack = document.createElement('div');
+            cardBack.className = 'card-back';
+            cardBack.textContent = prizeName;
+
+            card.appendChild(cardFace);
+            card.appendChild(cardBack);
+            cardContainerDiv.appendChild(card);
+
+            cardContainerDiv.addEventListener('click', () => {
+                card.style.transition = 'transform 1s ease';
+                const isFlipped = card.dataset.flipped === 'true';
+                card.classList.toggle('flipped');
+                card.dataset.flipped = !isFlipped;
+
+                if (!isFlipped) {
+                    setTimeout(() => {
+                        resultCard.style.visibility = 'visible';
+                        resultCard.innerHTML = `<div>${prizeName}</div>`;
+                        resultCard.style.transform = 'translate(-50%, -50%) scale(1)';
+                        setTimeout(() => {
+                            resultCard.style.animation = 'shake 0.3s ease forwards';
+                            setTimeout(() => {
+                                resultCard.style.animation = '';
+                            }, 300);
+                        }, 480);
+                    }, 800);
+                }
+            });
+
+            resultCard.addEventListener('click', () => {
+                resultCard.style.transform = 'translate(-50%, -50%) scale(0)';
+            });
+
+            cardContainer.appendChild(cardContainerDiv);
+        }
+
+        function shuffleArray(array) {
+            for (let i = array.length - 1; i > 0; i--) {
+                const j = Math.floor(Math.random() * (i + 1));
+                [array[i], array[j]] = [array[j], array[i]];
+            }
+            return array;
+        }
+
+        function updatePrizeList() {
+            prizeList.innerHTML = '';
+            prizes.forEach((prize, index) => {
+                const listItem = document.createElement('div');
+                listItem.className = 'prize-item';
+                listItem.textContent = prize;
+
+                const deleteBtn = document.createElement('button');
+                deleteBtn.textContent = '-';
+                deleteBtn.className = 'delete-btn';
+                deleteBtn.addEventListener('click', () => {
+                    deletePrize(index);
+                });
+
+                listItem.appendChild(deleteBtn);
+                prizeList.appendChild(listItem);
+            });
+        }
+
+        function deletePrize(index) {
+            prizes.splice(index, 1);
+            updateCards();
+            updatePrizeList();
+        }
+    </script>
+</body>
+</html>
+
+
